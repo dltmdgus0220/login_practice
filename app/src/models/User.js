@@ -7,9 +7,9 @@ class User {
         this.body = body;
     };
 
-    login() {
+    async login() { // await를 사용하기 위해 비동기로 선언
         const client = this.body;
-        const { id, password } = UserStorage.getUserInfo(client.id);
+        const { id, password } = await UserStorage.getUserInfo(client.id); // await는 promise를 반환하는 애한테 값을 다 받을 때까지 기다리라는 명령
         
         if (id) {
             if (password === client.password) {
@@ -20,9 +20,14 @@ class User {
         return { success: false, msg: "존재하지 않는 아이디입니다."};
     };
 
-    register() {
+    async register() {
         const client = this.body;
-        UserStorage.save(client);
+        try {
+            const response = await UserStorage.save(client);
+            return response;
+        } catch (err) {
+            return { success: false, msg: err };
+        }
     };
 };
 
